@@ -1,27 +1,63 @@
-function handleMouseEnter() {
-    this.style.backgroundColor = 'black';
+function handleMouseEnter(e) {
+    if (e.buttons === 1) {
+        this.classList.add('colored');
+    }
 }
 
-function handleMouseLeave() {
-    console.log('Leave');
+function handleMouseClick() {
+    this.classList.add('colored');
 }
 
-const grid = document.querySelector('.grid');
-const gridWidth = parseInt(window.getComputedStyle(grid).maxWidth);
-const gridHeight = parseInt(window.getComputedStyle(grid).maxHeight);
-let gridSize = 30;
+function generateGrid(gridSize) {
 
-for (let i = 0; i < gridSize ** 2; i++) {
-    const cell = document.createElement('div');
-    cell.classList.add('cell');
+    const previousGrid = document.querySelector('.grid')
+    if (previousGrid) {
+        content.removeChild(previousGrid);
+    }
 
-    cell.style.width = gridWidth / gridSize - 2 + "px";
-    cell.style.height = gridHeight / gridSize - 2 + "px";
+    const newGrid = document.createElement('div');
+    newGrid.classList.add('grid');
+    const gridWidth = 600;
+    const gridHeight = 600;
+    content.appendChild(newGrid);
 
-    cell.addEventListener('mouseenter', handleMouseEnter);
-    cell.addEventListener('mouseleave', handleMouseLeave);
+    for (let i = 0; i < gridSize ** 2; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
 
-    console.log(gridWidth / gridSize - 2 + "px");
-    grid.appendChild(cell);
+        cell.style.width = gridWidth / gridSize - 2 + "px";
+        cell.style.height = gridWidth / gridSize - 2 + "px";
+    
+        cell.addEventListener('mouseover', handleMouseEnter);
+        
+        cell.addEventListener('click', handleMouseClick);
+    
+        cell.addEventListener('dragstart', e => {
+            e.preventDefault();
+        });
+    
+        newGrid.appendChild(cell);
+    }
 }
 
+const content = document.querySelector('.content');
+
+let gridSize = 20;
+generateGrid(gridSize);
+
+const slider = document.querySelector('.slider');
+const sliderValue = document.querySelector('.slider-value');
+
+slider.addEventListener('input', function() {
+    sliderValue.textContent = `${this.value} x ${this.value}`;
+    generateGrid(this.value);
+})
+
+const eraser = document.querySelector('.eraser');
+eraser.addEventListener('click', () => {
+    const colored = document.querySelectorAll('.colored');
+
+    colored.forEach(cell => {
+        cell.classList.remove('colored');
+    });
+})
